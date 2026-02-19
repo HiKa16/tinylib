@@ -34,15 +34,39 @@ def create_tables():
                 loan_id INTEGER PRIMARY KEY AUTOINCREMENT, 
                 user_id INTEGER, 
                 book_id INTEGER, 
-                start_date DATE,
-                end_date DATE,
-                ongoing BOOLEAN,
+                date DATE,
+                return_date DATE,
                 FOREIGN KEY (user_id) REFERENCES Users(user_id),
                 FOREIGN KEY (book_id) REFERENCES Books(book_id))
             '''
     cursor.execute(query)
     print("'Loans' table : done")
 
+    query = '''
+            CREATE TRIGGER IF NOT EXISTS book_loan
+            AFTER INSERT ON Loans 
+            BEGIN
+                UPDATE Books 
+                SET available = False 
+                WHERE book_id = NEW.book_id;
+            END
+            '''
+
+    cursor.execute(query)
+    print("'update_loaned_book' trigger: done")
+
+    query = '''
+            CREATE TRIGGER IF NOT EXISTS book_return
+            AFTER UPDATE ON Loans
+            WHEN NEW.return_date IS NOT NULL
+            BEGIN
+                UPDATE Books
+                SET available = True
+                WHERE book_id = NEW.book_id;
+            END
+            '''
+    cursor.execute(query)
+    print("'update_loaned_book' trigger: done")
     connection.commit()
     cursor.close()
     connection.close()
