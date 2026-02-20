@@ -1,3 +1,5 @@
+from utils import StrStyle
+
 class Book():
     def __init__(self, id, title=None, author=None, year=None, status=None):
         self.id = id
@@ -60,14 +62,6 @@ class Loan():
         print(card)
 
 
-class StrStyle():
-    GRAY = '\033[90m'
-    GREEN = '\033[92m'
-    RED = '\033[31m'
-    MAGENTA = '\033[95m'
-    BOLD = '\033[1m'
-    RESET = '\033[0m'
-
 #TODO
 class Filter():
     def __init__(self, author="", year="" , available_only=False) : 
@@ -112,36 +106,3 @@ class Filter():
             return "WHERE " + " AND ".join(filter_str)
         else : 
             return ""
-
-
-"""
-BLACK = '\033[30m'
-GREEN = '\033[32m'
-YELLOW = '\033[33m' # orange on some systems
-BLUE = '\033[34m'
-MAGENTA = '\033[35m'
-CYAN = '\033[36m'
-LIGHT_GRAY = '\033[37m'
-BRIGHT_RED = '\033[91m'
-BRIGHT_YELLOW = '\033[93m'
-BRIGHT_BLUE = '\033[94m'
-BRIGHT_MAGENTA = '\033[95m'
-BRIGHT_CYAN = '\033[96m'
-WHITE = '\033[97m'
-
-RESET = '\033[0m' # called to return to standard terminal text color
-
-print(BLACK + "black" + RESET)
-print(GREEN + "green" + RESET)
-print(YELLOW + "yellow" + RESET)
-print(BLUE + "blue" + RESET)
-print(MAGENTA + "magenta" + RESET)
-print(CYAN + "cyan" + RESET)
-print(LIGHT_GRAY + "light gray" + RESET)
-print(BRIGHT_RED + "bright red" + RESET)
-print(BRIGHT_YELLOW + "bright yellow" + RESET)
-print(BRIGHT_BLUE + "bright blue" + RESET)
-print(BRIGHT_MAGENTA + "bright magenta" + RESET)
-print(BRIGHT_CYAN + "bright cyan" + RESET)
-print(WHITE + "white" + RESET)
-"""

@@ -1,15 +1,17 @@
 import requests
 import sqlite3
-
-DB_FILE = "TinyLib.db"
+from utils import *
 
 def get_connection():
     return sqlite3.connect(DB_FILE)
-    
+
+### Création des tables
 def create_tables():
     connection = get_connection()
     connection.execute("PRAGMA foreign_keys = ON")
     cursor = connection.cursor()
+
+    ### BOOKS
     query = '''CREATE TABLE IF NOT EXISTS Books (
                 book_id INTEGER PRIMARY KEY AUTOINCREMENT, 
                 title TEXT NOT NULL,
@@ -20,6 +22,7 @@ def create_tables():
     cursor.execute(query)
     print("'Books' table : done")
 
+    ### USERS
     query = '''
                 CREATE TABLE IF NOT EXISTS Users (
                 user_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,6 +32,7 @@ def create_tables():
     cursor.execute(query)
     print("'Users' table : done")
 
+    ### LOANS
     query = '''                
                 CREATE TABLE IF NOT EXISTS Loans (
                 loan_id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -42,6 +46,7 @@ def create_tables():
     cursor.execute(query)
     print("'Loans' table : done")
 
+    ### TRIGGER book_loan
     query = '''
             CREATE TRIGGER IF NOT EXISTS book_loan
             AFTER INSERT ON Loans 
@@ -55,6 +60,7 @@ def create_tables():
     cursor.execute(query)
     print("'update_loaned_book' trigger: done")
 
+    ### TRIGGER book_return
     query = '''
             CREATE TRIGGER IF NOT EXISTS book_return
             AFTER UPDATE ON Loans
@@ -67,11 +73,14 @@ def create_tables():
             '''
     cursor.execute(query)
     print("'update_loaned_book' trigger: done")
+
+    ###
     connection.commit()
     cursor.close()
     connection.close()
     print("Done")
 
+### Requêtes à l'API Open Library
 def fetch_books(query, limit=10):
     url = "https://openlibrary.org/search.json"
     params = {
@@ -83,7 +92,9 @@ def fetch_books(query, limit=10):
         return response.json()['docs']
     else: 
         return []
+
     
+### Ajout de livres à la base de données
 def add_books(books):
     connection = get_connection()
     cursor = connection.cursor()
@@ -96,13 +107,14 @@ def add_books(books):
 
 
 if __name__ == "__main__":
-    print("--- Création de la base de données ---")
+    clear_screen()
+    print(StrStyle.BOLD + "Création de la base de données" + StrStyle.RESET)
     create_tables()
     while True:
-        query = input("Requête API Open Library (auteur, titre): ")
+        query = input("Requête à l'API Open Library : ")
         if query == "":
             break
-        limit = int(input("limit : "))
+        limit = int(input("nombre de livres à récupérer : "))
         books = fetch_books(query, limit)
         #for book in books:
         #   print(book.get("title"))

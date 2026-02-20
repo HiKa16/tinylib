@@ -1,20 +1,16 @@
-from InquirerPy import inquirer, prompt, get_style
+from InquirerPy import inquirer, get_style
 from InquirerPy.base import Choice
-from queries import *
 from sqlite3 import IntegrityError
+
+from queries import *
+from utils import *
+
 import os
 
-
-def clear_screen():
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print("-" * 40)
-    print(" " * 10 + StrStyle.BOLD + "📚 T i n y L i b 📚" + StrStyle.RESET)
-    print("-" * 40)
-
-#style_dict = {"questionmark":"hidden", "answermark":"hidden", "pointer": "#61afef", "input": "#98c379"}
 style = get_style({"questionmark":"hidden", "answermark":"hidden", "pointer": "#61afef", "input": "#98c379", "answer":"hidden"})
 back_choice = Choice(0, "(Retour)")
 
+#Menu de départ
 def menu():
     clear_screen()
     choice = inquirer.select(message="", 
@@ -72,7 +68,7 @@ def sign_in():
             password = inquirer.secret(message="Mot de passe : ", validate=lambda pswrd : check_password(pswrd, user.password), style=style).execute()
             return user
 
-# menu utilisateur
+# Menu utilisateur
 def user_board(user):
     while True : 
         clear_screen()
@@ -88,7 +84,7 @@ def user_board(user):
             if inquirer.confirm(message="Déconnexion?", style=style).execute() : 
                 return
 
-
+# Emprunts (utilisateur)
 def user_books(user):
     while True :
         clear_screen()
@@ -115,7 +111,7 @@ def user_books(user):
         else :
             return
 
-
+# Bibliothèque
 def library_books(user):
     while True: 
         clear_screen()
@@ -146,33 +142,8 @@ def library_books(user):
             return
 
 if __name__ == "__main__":
+    if not os.path.exists(DB_FILE):
+        print("La base de données n'a pas été trouvée. Exécuter 'db.py' pour la mettre en place.")
+        quit()
     while menu(): 
         continue
-
-'''
-def book_card(user, book, origin):
-    if origin == "library":
-        options = [Choice(1, "(Emprunter)")] if book.isAvailable() else []
-        show_status = True
-    if origin == "user":
-        options = [Choice(2, "(Rendre)")]
-        show_status = False
-    options += [back_choice]
-
-    while True:
-        clear_screen()
-        book.show_card(show_status)
-        choice = inquirer.select(message="", choices=options, style=style).execute()
-        if choice == 1 : 
-            if inquirer.confirm(message="Emprunter " + str(book) + " ?", style=style).execute():
-                add_loan(user.id, book.id)
-                inquirer.select(message="Livre emprunté", choices=[back_choice], style=style).execute()
-                return
-        elif choice == 2: 
-            if inquirer.confirm(message="Rendre " + str(book) + " ?", style=style).execute():
-                return_book(user.id, book.id)
-                inquirer.select(message="Livre retourné", choices=[back_choice], style=style).execute()
-                return                
-        else:
-            return
-'''
